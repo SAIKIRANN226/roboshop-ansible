@@ -2,7 +2,7 @@
   hosts: catalogue
   become: yes
   tasks:
-  - name: disable old nodejs and enable nodejs  # justt search ansible dnf module
+  - name: disable old nodejs and enable nodejs  # just search ansible dnf module
     ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y  # if we dont find in default ansible then we can use shell or command,command-->wont respect target machine and shell variables and environment (or) running outside the command ; shell--> it is like you logged in inside target machine directly and running command
 
   - name: Install nodejs

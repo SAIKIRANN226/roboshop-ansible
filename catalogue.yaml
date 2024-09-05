@@ -15,7 +15,7 @@
     ansible.builtin.user:
       name: roboshop
 
-  - name: Recursively remove app directory
+  - name: Recursively remove app directory  # lines from 18-21 is written because if we run this multiple times again app folder may create so if it is exists then it will delete and create again
     ansible.builtin.file:
       path: /app
       state: absent

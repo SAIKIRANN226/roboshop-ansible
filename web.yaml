@@ -7,7 +7,7 @@
       name: nginx 
       state: present
   
-  - name: remove html directory
+  - name: remove html directory # default hmtl folder will be removed
     ansible.builtin.file:
       path: /usr/share/nginx/html
       state: absent

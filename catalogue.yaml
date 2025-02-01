@@ -2,9 +2,9 @@
   hosts: catalogue
   become: yes
   tasks:
-  - name: disable old nodejs and enable nodejs  # just search ansible dnf module
-    ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y  # if we dont find module in default ansible then we can use shell or command.command-->wont respect target machine and shell variables and environment it is running the command outside ; shell--> it is like you logged in inside target machine directly and running command
-    # if i login to the catalouge and run the "dnf module disable nodejs -y ; dnf module enable nodejs:18 -y" it can easily run but when you are running this outside the command it will consider these two as one command,thats why shell is slow
+  - name: disable old nodejs and enable nodejs  # Just search ansible dnf module
+    ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y  # If we dont find module in default ansible document then we can use shell (or) command. Here in this case "ansible.builtin.command" is not working because command ---> Wont respect target machine,shell variables and environment it is running the command outside ; shell ---> It is like you logged in inside the target machine directly and running command
+    # If i login to the catalouge and run the "dnf module disable nodejs -y ; dnf module enable nodejs:18 -y" it can easily run but when you are running this outside the command it will consider these two as one command,thats why shell is slow
 
   - name: Install nodejs
     ansible.builtin.dnf:
@@ -15,7 +15,7 @@
     ansible.builtin.user:
       name: roboshop
 
-  - name: Recursively remove app directory  # lines from 18-21 is written because if we run this multiple times again app folder may create so if it is exists then it will delete and create again
+  - name: Recursively remove app directory  # Lines from 18-21 is written because if we run this multiple times again app folder will be created multiple times as we run, so if it is exists then it will delete and create again
     ansible.builtin.file:
       path: /app
       state: absent
@@ -34,7 +34,7 @@
     ansible.builtin.unarchive:  
       src: /tmp/catalogue.zip
       dest: /app
-      remote_src: yes    # we are just telling to ansible server(ansible controller)that we are already downloaded the file(above catalogue application)in the remote machine(catalogue),so no need to worry and no need to find in your ansible controller,it is already there in the target machine just unarchive it by giving "remote_src"
+      remote_src: yes    # We are just telling to ansible server(ansible controller)that we are already downloaded the file(above catalogue application)in the remote machine(catalogue),so no need to worry and no need to find in your ansible controller,it is already there in the target machine just unarchive it by giving "remote_src"
 
   - name: Install dependencies
     ansible.builtin.command: npm install
@@ -50,7 +50,7 @@
     ansible.builtin.systemd_service:
       daemon_reload: true
 
-  # let's start after the data is loaded
+  # Let's start after the data is loaded
 
   - name: Copy mongodb repo
     ansible.builtin.copy:
@@ -64,7 +64,7 @@
 
   - name: get the categories count
     ansible.builtin.command:  mongo --host mongodb.daws76s.online --quiet --eval 'db = db.getSiblingDB("catalogue"); db.products.count()'  # ansible.builtin.command is nothing but running above big command in the server,take that command output in a register with a variable name(product_count)
-    register: product_count # the above large command is to get the catagories count and registering the product count in a variable register
+    register: product_count # The above large command is to get the catagories count and registering the product count in a variable register
 
   # - name: print the count
   #   ansible.builtin.debug:
@@ -72,7 +72,7 @@
 
   - name: load catalogue data
     ansible.builtin.command: mongo --host mongodb.daws76s.online < /app/schema/catalogue.js
-    when: product_count.stdout == "0" # keep double quotes that means if product count is 0 then only run and load the catagories otherwise ignore
+    when: product_count.stdout == "0" # Keep double quotes that means if product count is 0 then only run and load the catagories otherwise ignore
 
   - name: start and enable catalogue
     ansible.builtin.service:
@@ -81,4 +81,4 @@
       enabled: yes
 
 
-# to know if catalogue is connected to mongodb or not take sudo su - then  "tail -f /var/log/messages"
+# To know if catalogue is connected to mongodb or not take sudo su - then  "tail -f /var/log/messages"
